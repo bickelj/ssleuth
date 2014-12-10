@@ -56,8 +56,8 @@ var SSleuthUI = {
   },
 
   uninit: function (window) {
-    // Cleanup everything! 
-    // Removing the button deletes the overlay elements as well 
+    // Cleanup everything!
+    // Removing the button deletes the overlay elements as well
     try {
       removePanelMenu(window.document);
       removeButton(_ssleuthButton(window));
@@ -68,17 +68,17 @@ var SSleuthUI = {
   },
 
   onLocationChange: function (window, urlChanged) {
-    // The document elements are not available until a 
+    // The document elements are not available until a
     // successful init. So we need to add the child panel
-    // for the first time 
+    // for the first time
     if (!window) return;
 
     // If the user is navigating with the domains tab
     // reload the data.
     loadDomainsTab();
 
-    // If the user navigates the tabs with the panel open, 
-    //  make it appear smooth. 
+    // If the user navigates the tabs with the panel open,
+    //  make it appear smooth.
     var ssleuthPanel = _ssleuthPanel(window);
     if (ssleuthPanel.state == "open") {
       showPanel(ssleuthPanel, true);
@@ -98,7 +98,7 @@ var SSleuthUI = {
       break;
 
     case "http":
-      setButtonRank(-1, win);
+      setButtonRank(0.0, win);
       setBoxHidden("https", true, win);
       setBoxHidden("http", false, win);
       doc.getElementById('ssleuth-img-cipher-rank-star').hidden = true;
@@ -114,16 +114,16 @@ var SSleuthUI = {
       doc.getElementById('ssleuth-img-cipher-rank-star').hidden = false;
       break;
     }
-    
+
     //doc.getElementById('ssleuth-panel-domains-vbox')
-    //  .setAttribute('maxheight', doc.getElementById('ssleuth-panel-main-vbox').scrollHeight); 
-    //dump ("Box height -- " + 
+    //  .setAttribute('maxheight', doc.getElementById('ssleuth-panel-main-vbox').scrollHeight);
+    //dump ("Box height -- " +
     //  doc.getElementById('ssleuth-panel-main-vbox').scrollHeight + "\n");
   },
 
   onStateStop : function (tab, win) {
     showCrossDomainRating(tab, win);
-  }, 
+  },
 
   fillPanel: function (connectionRank,
                         cipherSuite,
@@ -139,9 +139,9 @@ var SSleuthUI = {
     showPFS(cipherSuite.pfs, win);
     showFFState(securityState, win);
     showCertDetails(cert, domMismatch, ev, win);
-    showTLSVersion(win); 
+    showTLSVersion(win);
     //TODO : Fix tab param
-    showCrossDomainRating(-1, win); 
+    showCrossDomainRating(-1, win);
   },
 
   prefListener: function (branch, name) {
@@ -202,9 +202,9 @@ function loadStyleSheet() {
 }
 
 function removeStyleSheet() {
-  unregisterSheet('ssleuth.css'); 
+  unregisterSheet('ssleuth.css');
   if (getPlatform() == 'Darwin')
-    unregisterSheet('darwin.css'); 
+    unregisterSheet('darwin.css');
 
   function unregisterSheet(file) {
     var sss = Cc["@mozilla.org/content/style-sheet-service;1"]
@@ -311,7 +311,7 @@ function createButton(window) {
 
     button.setAttribute("label", "SSleuth");
     button.addEventListener("contextmenu", menuEvent, false);
-    // button.setAttribute("oncommand", "null"); 
+    // button.setAttribute("oncommand", "null");
     button.addEventListener("click", panelEvent, false);
     button.addEventListener("keypress", panelEvent, false);
 
@@ -346,7 +346,7 @@ function panelEvent(event) {
     // The toolbar button, technically being a 'button'
     // and the panel as it's child, is automagically opened by firefox.
     // Unlike a shortcut-key or the urlbar notifier, we don't
-    // need to open the panel in this case. 
+    // need to open the panel in this case.
     try {
       const ui = SSleuthUI;
       if (!(event.type == "click" &&
@@ -384,7 +384,7 @@ function showPanel(panel, show) {
 }
 
 function panelVisible() {
-  // Special case : Firefox does not select menuitems unless the 
+  // Special case : Firefox does not select menuitems unless the
   //    panel is visible. Or loadTabs -> loadCiphersTab() ?
   loadCiphersTab();
 }
@@ -439,11 +439,11 @@ function setButtonRank(connectionRank, win) {
       ssleuthUbRank.textContent = "";
     }
     _ssleuthButton(win).setAttribute("rank", buttonRank);
-    // TODO : (SSleuthUI.prefs.PREFS['ui.urlbar.colorize'] ? 'blank' : buttonRank)); 
+    // TODO : (SSleuthUI.prefs.PREFS['ui.urlbar.colorize'] ? 'blank' : buttonRank));
   }
 
   // URL bar background gradient
-  doc.getElementById("urlbar").setAttribute("_ssleuthrank", 
+  doc.getElementById("urlbar").setAttribute("_ssleuthrank",
       (SSleuthUI.prefs.PREFS['ui.urlbar.colorize'] ? buttonRank : 'default'));
 }
 
@@ -583,7 +583,7 @@ function showCertDetails(cert, domMismatch, ev, win) {
     doc.getElementById("ssleuth-img-cert-state").setAttribute("state", "bad");
   }
 
-  // Need to localize 'bits'. XUL - may not need ids. 
+  // Need to localize 'bits'. XUL - may not need ids.
   doc.getElementById("ssleuth-text-cert-pub-key")
     .textContent = (cert.pubKeySize + " bits " + cert.pubKeyAlg);
   doc.getElementById("ssleuth-text-cert-pub-key")
@@ -599,55 +599,55 @@ function showCertDetails(cert, domMismatch, ev, win) {
     .textContent = svCert.sha1Fingerprint.substring(0, 30) + ' ' +
                     svCert.sha1Fingerprint.substring(30);
 
-  doc.getElementById("ssleuth-text-cert-validity-box").hidden 
+  doc.getElementById("ssleuth-text-cert-validity-box").hidden
       = !(panelInfo.certValidity);
-  doc.getElementById("ssleuth-text-cert-fingerprint-box").hidden 
+  doc.getElementById("ssleuth-text-cert-fingerprint-box").hidden
       = !(panelInfo.certFingerprint);
 }
 
 function showTLSVersion(win) {
-  var doc = win.document; 
+  var doc = win.document;
   var tab = win.gBrowser.selectedBrowser._ssleuthTabId;
   var tlsIndex = 'ff_cache';
 
-  if ( SSleuthHttpObserver.responseCache[tab].tlsVersion ) 
+  if ( SSleuthHttpObserver.responseCache[tab].tlsVersion )
     tlsIndex = SSleuthHttpObserver.responseCache[tab].tlsVersion;
 
-  if (tlsIndex == '') 
+  if (tlsIndex == '')
     tlsIndex = 'ff_cache';
 
-  doc.getElementById("ssleuth-text-tls-version").textContent = 
-      ssleuthTlsVersions[tlsIndex].ui; 
+  doc.getElementById("ssleuth-text-tls-version").textContent =
+      ssleuthTlsVersions[tlsIndex].ui;
 
-  doc.getElementById("ssleuth-img-tls-version").setAttribute('state', 
+  doc.getElementById("ssleuth-img-tls-version").setAttribute('state',
       ssleuthTlsVersions[tlsIndex].state);
 }
 
 function showCrossDomainRating(tab, win) {
-  var doc = win.document; 
+  var doc = win.document;
   if (!SSleuthUI.prefs.PREFS['domains.observe']) {
     doc.getElementById('ssleuth-domains-rating-box').hidden = true;
     return;
   }
   doc.getElementById('ssleuth-domains-rating-box').hidden = false;
-  
+
   var domainsRating = '...';
-  if (tab == -1) 
+  if (tab == -1)
     tab = win.gBrowser.selectedBrowser._ssleuthTabId;
-  var respCache = SSleuthHttpObserver.responseCache[tab]; 
+  var respCache = SSleuthHttpObserver.responseCache[tab];
 
   if ( respCache.domainsRating &&
-        respCache.domainsRating != -1 ) 
+        respCache.domainsRating != -1 )
     domainsRating = respCache.domainsRating;
 
-  doc.getElementById("ssleuth-text-domains-rating-numeric").textContent = 
-    ' domains : ' + domainsRating; 
+  doc.getElementById("ssleuth-text-domains-rating-numeric").textContent =
+    ' domains : ' + domainsRating;
 
   var ratingClass = getRatingClass(domainsRating);
-  if ( respCache.mixedContent ) 
-    ratingClass = 'low'; 
+  if ( respCache.mixedContent )
+    ratingClass = 'low';
   doc.getElementById('ssleuth-img-domains-rating').setAttribute
-      ('rank', ratingClass); 
+      ('rank', ratingClass);
 }
 
 function createKeyShortcut(doc) {
@@ -658,7 +658,7 @@ function createKeyShortcut(doc) {
   var len = keys.length;
 
   // Mozilla, I have no clue, without pointing 'oncommand' to
-  // something, the key events won't fire! I already have an 
+  // something, the key events won't fire! I already have an
   // event listener for 'command'.
   var key = create(doc, 'key', {
     id: 'ssleuth-panel-keybinding',
@@ -767,8 +767,8 @@ function menuEvent(event) {
     }
 
     doc.documentElement.replaceChild(menupopup, ssleuthPanelMenu);
-    // Add listeners. Since we use the id's to get the element, 
-    // this can only be done after inserting the menupopup into the document. 
+    // Add listeners. Since we use the id's to get the element,
+    // this can only be done after inserting the menupopup into the document.
     for (var id of[
       "ssleuth-menu-open-preferences",
       "ssleuth-menu-open-about",
@@ -870,11 +870,11 @@ function initCiphersPanel(doc) {
 }
 
 function initPanelPreferences(doc) {
-  var panelPref = doc.getElementById('ssleuth-paneltab-pref-box'); 
+  var panelPref = doc.getElementById('ssleuth-paneltab-pref-box');
   panelPref.addEventListener('click', function() {
     SSleuthPreferences.openTab(0);
     togglePanel(_ssleuthPanel(_window()));
-    }, false); 
+    }, false);
 }
 
 function loadDomainsTab() {
@@ -903,11 +903,11 @@ function loadDomainsTab() {
     // TODO : Set maxheight to that of the main vbox
     // rb.maxheight = doc.getElementById('ssleuth-panel-main-vbox').height;
     // TODO : 1) Problem navigate http page/chrome page back and forth
-    //        - Chops off main tab 
+    //        - Chops off main tab
     //        2) Navigate https page to http, main tab is big, empty space.
     doc.getElementById('ssleuth-panel-domains-vbox')
-      .setAttribute('maxheight', doc.getElementById('ssleuth-panel-main-vbox').scrollHeight); 
-    // dump ("Box height -- " + 
+      .setAttribute('maxheight', doc.getElementById('ssleuth-panel-main-vbox').scrollHeight);
+    // dump ("Box height -- " +
     //  doc.getElementById('ssleuth-panel-main-vbox').scrollHeight + "\n");
 
     for (var [domain, stats] in Iterator(reqs)) {
@@ -960,9 +960,9 @@ function loadDomainsTab() {
             }));
 
             let hbCert = vb.appendChild(create(doc, 'hbox', {})); {
-              str = getText('certificate.short.text') + 
+              str = getText('certificate.short.text') +
                     ' : ' + stats['signature'].hmac + '/' + stats['signature'].enc + '.  ';
-              str += getText('certificate.key.short') + ' : ' + stats['pubKeySize'] 
+              str += getText('certificate.key.short') + ' : ' + stats['pubKeySize']
                   + ' ' + getText('general.bits') + ' ' + stats['pubKeyAlg'];
               hbCert.appendChild(create(doc, 'description', {
                 value: str
@@ -1028,7 +1028,7 @@ function loadCiphersTab() {
           label: rd,
           value: rd.toLowerCase()
         }));
-        // TODO : Some optimizations here in Firefox. Unless the panel is 
+        // TODO : Some optimizations here in Firefox. Unless the panel is
         //        visible, the selected item is not applied??
         if (csList[i].state === rd.toLowerCase()) {
           m_list.selectedItem = mi;
@@ -1044,7 +1044,7 @@ function loadCiphersTab() {
           }
         }
         SSleuthPreferences.prefService
-          .setCharPref("extensions.ssleuth.suites.toggle", 
+          .setCharPref("extensions.ssleuth.suites.toggle",
               JSON.stringify(csTglList));
       }, false);
     }
@@ -1115,7 +1115,7 @@ function getRatingClass(rating) {
   } else if (rating <= 10) {
     rank = 'vhigh';
   }
-  return rank; 
+  return rank;
 }
 
 
